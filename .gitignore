@@ -11,3 +11,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Docker env (contains secrets)
+.env
