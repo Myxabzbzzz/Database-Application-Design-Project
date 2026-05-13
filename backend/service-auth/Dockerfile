@@ -9,7 +9,7 @@ WORKDIR /var/www
 
 COPY . .
 
-RUN mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views \
+RUN mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/api-docs \
     && composer install --no-dev --optimize-autoloader --no-interaction
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
