@@ -32,7 +32,9 @@ services:
       APP_ENV: local
       APP_KEY: ${AUTH_APP_KEY}
       APP_DEBUG: "true"
-      APP_URL: http://localhost:8001
+      APP_URL: http://localhost
+      L5_SWAGGER_BASE_PATH: /api/auth
+      L5_SWAGGER_UI_DOC_EXPANSION: none
       DB_CONNECTION: pgsql
       DB_HOST: postgres
       DB_PORT: 5432
