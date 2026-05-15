@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\VerifyEmail;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules\Password;
 use OpenApi\Attributes as OA;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -17,6 +20,13 @@ class AuthController extends Controller
     private function guard(): JWTGuard
     {
         return Auth::guard('api');
+    }
+
+    private function sendVerificationCode(User $user): void
+    {
+        $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        Cache::put("email_verification:{$user->id}", $code, now()->addMinutes(10));
+        Mail::to($user->email)->send(new VerifyEmail($code, $user->name));
     }
 
     #[OA\Post(
@@ -60,7 +70,13 @@ class AuthController extends Controller
         $user = User::create($data);
         $token = JWTAuth::fromUser($user);
 
-        return response()->json(['user' => $user, 'token' => $token], 201);
+        $this->sendVerificationCode($user);
+
+        return response()->json([
+            'user'    => $user,
+            'token'   => $token,
+            'message' => 'Verification code sent to your email',
+        ], 201);
     }
 
     #[OA\Post(
@@ -161,6 +177,72 @@ class AuthController extends Controller
         $token = $this->guard()->refresh();
 
         return response()->json(['token' => $token, 'token_type' => 'bearer']);
+    }
+
+    #[OA\Post(
+        path: '/email/verify',
+        summary: 'Verify email with 6-digit code',
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['code'],
+                properties: [
+                    new OA\Property(property: 'code', type: 'string', minLength: 6, maxLength: 6, example: '123456'),
+                ]
+            )
+        ),
+        tags: ['Email Verification'],
+        responses: [
+            new OA\Response(response: 200, description: 'Email verified'),
+            new OA\Response(response: 422, description: 'Invalid or expired code'),
+        ]
+    )]
+    public function verifyEmail(Request $request): JsonResponse
+    {
+        $request->validate(['code' => ['required', 'string', 'size:6']]);
+
+        $user = $this->guard()->user();
+
+        if ($user->email_verified_at) {
+            return response()->json(['message' => 'Email already verified']);
+        }
+
+        $key    = "email_verification:{$user->id}";
+        $stored = Cache::get($key);
+
+        if (! $stored || $stored !== $request->code) {
+            return response()->json(['message' => 'Invalid or expired code'], 422);
+        }
+
+        $user->email_verified_at = now();
+        $user->save();
+        Cache::forget($key);
+
+        return response()->json(['message' => 'Email verified successfully']);
+    }
+
+    #[OA\Post(
+        path: '/email/resend',
+        summary: 'Resend email verification code',
+        security: [['bearerAuth' => []]],
+        tags: ['Email Verification'],
+        responses: [
+            new OA\Response(response: 200, description: 'Code resent'),
+            new OA\Response(response: 422, description: 'Email already verified'),
+        ]
+    )]
+    public function resendCode(): JsonResponse
+    {
+        $user = $this->guard()->user();
+
+        if ($user->email_verified_at) {
+            return response()->json(['message' => 'Email already verified'], 422);
+        }
+
+        $this->sendVerificationCode($user);
+
+        return response()->json(['message' => 'Verification code resent']);
     }
 
     #[OA\Put(
