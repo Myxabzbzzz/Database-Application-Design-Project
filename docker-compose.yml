@@ -20,15 +20,9 @@ services:
       timeout: 5s
       retries: 10
 
-  # ─── Redis ──────────────────────────────────────────────────────────────────
-
   redis:
     image: redis:7-alpine
     restart: unless-stopped
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -57,17 +51,50 @@ services:
       DB_USERNAME: ${DB_USERNAME:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:-secret}
       JWT_SECRET: ${JWT_SECRET}
+      REDIS_CLIENT: predis
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      REDIS_CLIENT: predis
       CACHE_STORE: redis
       SESSION_DRIVER: array
       QUEUE_CONNECTION: redis
       LOG_CHANNEL: stderr
+      MAIL_MAILER: smtp
+      MAIL_HOST: smtp.gmail.com
+      MAIL_PORT: 587
+      MAIL_USERNAME: amir.boltabayev@gmail.com
+      MAIL_PASSWORD: ${GMAIL_APP_PASSWORD}
+      MAIL_ENCRYPTION: tls
+      MAIL_FROM_ADDRESS: amir.boltabayev@gmail.com
+      MAIL_FROM_NAME: "DAD Auth"
     depends_on:
       postgres:
         condition: service_healthy
       redis:
+        condition: service_healthy
+
+  service-order:
+    build: ./backend/service-order
+    restart: unless-stopped
+    ports:
+      - "8002:8000"
+    environment:
+      APP_NAME: service-order
+      APP_ENV: local
+      APP_KEY: ${ORDER_APP_KEY}
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8002
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: order_db
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+      LOG_CHANNEL: stderr
+    depends_on:
+      postgres:
         condition: service_healthy
 
   service-payment:

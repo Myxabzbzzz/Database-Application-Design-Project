@@ -11,4 +11,6 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/refresh', [AuthController::class, 'refresh']);
     Route::get('/me', [AuthController::class, 'me']);
     Route::put('/password', [AuthController::class, 'changePassword']);
+    Route::post('/email/verify', [AuthController::class, 'verifyEmail']);
+    Route::post('/email/resend', [AuthController::class, 'resendCode']);
 });
