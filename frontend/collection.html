@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALVA — Collection</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Collection page extras */
+    @media (max-width: 900px) {
+      .sidebar-filter {
+        display: none;
+      }
+      .sidebar-filter.open {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 500;
+        overflow-y: auto;
+        border-radius: 0;
+        width: 300px;
+        border-right: 1px solid var(--border-light);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===================== NAV ===================== -->
+  <nav class="nav" id="main-nav">
+    <a href="index.html" class="nav-logo">ALVA</a>
+    <div class="nav-links">
+      <a href="collection.html">Collections</a>
+      <a href="collection.html">New Arrivals</a>
+      <a href="collection.html">Designers</a>
+      <a href="index.html#about">About</a>
+    </div>
+    <div class="nav-icons">
+      <button class="nav-icon-btn" aria-label="Search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <button class="nav-icon-btn" aria-label="Wishlist">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </button>
+      <a href="login.html" class="nav-icon-btn" aria-label="Account">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </a>
+      <a href="cart.html" class="nav-icon-btn" aria-label="Cart">
+        <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-count"></span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- ===================== HERO BANNER ===================== -->
+  <div class="hero-inner">
+    <div class="hero-bg" style="background-image: url('http://localhost/storage/storage/hero-runway.png');"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1 class="hero-inner-title">Collection</h1>
+    </div>
+  </div>
+
+  <!-- ===================== BREADCRUMB ===================== -->
+  <div class="breadcrumb">
+    <a href="index.html">Home</a>
+    <span class="breadcrumb-sep">/</span>
+    <span>Collection</span>
+  </div>
+
+  <!-- ===================== FILTER BAR ===================== -->
+  <div class="filter-bar">
+    <div class="filter-tabs">
+      <button class="filter-tab active" data-category="All">All</button>
+      <button class="filter-tab" data-category="Dresses">Dresses</button>
+      <button class="filter-tab" data-category="Blazers">Blazers</button>
+      <button class="filter-tab" data-category="Coats">Coats</button>
+      <button class="filter-tab" data-category="Knitwear">Knitwear</button>
+      <button class="filter-tab" data-category="Trousers">Trousers</button>
+      <button class="filter-tab" data-category="Bags">Bags</button>
+      <button class="filter-tab" data-category="Footwear">Footwear</button>
+      <button class="filter-tab" data-category="Accessories">Accessories</button>
+    </div>
+    <div class="filter-bar-right">
+      <select class="sort-select" id="sort-select" aria-label="Sort products">
+        <option value="featured">Featured</option>
+        <option value="newest">Newest</option>
+        <option value="price-asc">Price: Low to High</option>
+        <option value="price-desc">Price: High to Low</option>
+        <option value="rating">Top Rated</option>
+      </select>
+      <button class="filter-toggle-btn" id="filter-toggle" aria-label="Toggle filters">
+        <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/></svg>
+        Filters
+      </button>
+    </div>
+  </div>
+
+  <!-- ===================== COLLECTION LAYOUT ===================== -->
+  <div class="collection-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar-filter" id="sidebar-filter">
+
+      <!-- Category -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Category</div>
+        <label class="sidebar-option">
+          <input type="radio" class="category-radio" name="cat" value="All" checked>
+          <span class="sidebar-option-label">All</span>
+        </label>
+        <label class="sidebar-option">
+          <input type="radio" class="category-radio" name="cat" value="Dresses">
+          <span class="sidebar-option-label">Dresses</span>
+        </label>
+        <label class="sidebar-option">
+          <input type="radio" class="category-radio" name="cat" value="Blazers">
+          <span class="sidebar-option-label">Blazers &amp; Suits</span>
+        </label>
+        <label class="sidebar-option">
+          <input type="radio" class="category-radio" name="cat" value="Coats">
+          <span class="sidebar-option-label">Coats</span>
+        </label>
+        <label class="sidebar-option">
+          <input type="radio" class="category-radio" name="cat" value="Knitwear">
+          <span class="sidebar-option-label">Knitwear</span>
+        </label>
+        <label class="sidebar-option">
+          <input type="radio" class="category-radio" name="cat" value="Trousers">
+          <span class="sidebar-option-label">Trousers</span>
+        </label>
+        <label class="sidebar-option">
+          <input type="radio" class="category-radio" name="cat" value="Bags">
+          <span class="sidebar-option-label">Bags</span>
+        </label>
+        <label class="sidebar-option">
+          <input type="radio" class="category-radio" name="cat" value="Footwear">
+          <span class="sidebar-option-label">Footwear</span>
+        </label>
+        <label class="sidebar-option">
+          <input type="radio" class="category-radio" name="cat" value="Accessories">
+          <span class="sidebar-option-label">Accessories</span>
+        </label>
+      </div>
+
+      <!-- Size -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Size</div>
+        <div class="tag-list">
+          <label class="tag"><input type="checkbox" class="size-checkbox" value="XS" style="display:none">XS</label>
+          <label class="tag"><input type="checkbox" class="size-checkbox" value="S" style="display:none">S</label>
+          <label class="tag"><input type="checkbox" class="size-checkbox" value="M" style="display:none">M</label>
+          <label class="tag"><input type="checkbox" class="size-checkbox" value="L" style="display:none">L</label>
+          <label class="tag"><input type="checkbox" class="size-checkbox" value="XL" style="display:none">XL</label>
+          <label class="tag"><input type="checkbox" class="size-checkbox" value="One Size" style="display:none">One Size</label>
+        </div>
+      </div>
+
+      <!-- Color -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Color</div>
+        <div class="color-swatches">
+          <div class="color-swatch" data-color="black" style="background:#1a1a1a;" title="Black"></div>
+          <div class="color-swatch" data-color="white" style="background:#f0ebe4;border:1px solid #2e2e2e;" title="White / Cream"></div>
+          <div class="color-swatch" data-color="gold" style="background:#c9a870;" title="Gold"></div>
+          <div class="color-swatch" data-color="grey" style="background:#5a5a5a;" title="Grey"></div>
+          <div class="color-swatch" data-color="beige" style="background:#c9a870;" title="Beige"></div>
+          <div class="color-swatch" data-color="navy" style="background:#1a2640;" title="Navy"></div>
+          <div class="color-swatch" data-color="green" style="background:#2d4a3e;" title="Green"></div>
+          <div class="color-swatch" data-color="brown" style="background:#5a3a2a;" title="Brown"></div>
+        </div>
+      </div>
+
+      <!-- Price Range -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Price Range</div>
+        <div class="price-range">
+          <input type="number" id="price-min" placeholder="Min" min="0" step="50">
+          <span class="price-range-sep">–</span>
+          <input type="number" id="price-max" placeholder="Max" min="0" step="50">
+        </div>
+      </div>
+
+      <!-- Rating -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Rating</div>
+        <div class="star-filter">
+          <label class="star-option">
+            <input type="radio" class="rating-radio" name="rating" value="4.5">
+            <span class="star-option-stars">★★★★★</span>
+            <span class="star-option-label">4.5 &amp; up</span>
+          </label>
+          <label class="star-option">
+            <input type="radio" class="rating-radio" name="rating" value="4">
+            <span class="star-option-stars">★★★★☆</span>
+            <span class="star-option-label">4.0 &amp; up</span>
+          </label>
+          <label class="star-option">
+            <input type="radio" class="rating-radio" name="rating" value="3">
+            <span class="star-option-stars">★★★☆☆</span>
+            <span class="star-option-label">3.0 &amp; up</span>
+          </label>
+          <label class="star-option">
+            <input type="radio" class="rating-radio" name="rating" value="0" checked>
+            <span class="star-option-label" style="color:var(--text-3)">Any rating</span>
+          </label>
+        </div>
+      </div>
+
+      <button class="sidebar-clear" id="clear-filters">Clear All Filters</button>
+    </aside>
+
+    <!-- Main product grid -->
+    <div class="collection-main">
+      <div class="collection-results-bar">
+        <span class="collection-count" id="results-count">Loading…</span>
+      </div>
+
+      <div class="product-grid" id="product-grid">
+        <!-- Products rendered by collection.js -->
+      </div>
+
+      <div class="load-more-wrap">
+        <button class="btn btn-outline" id="load-more-btn" style="display:none;">Load More</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div>
+        <span class="footer-brand-logo">ALVA</span>
+        <p class="footer-brand-desc">Luxury fashion curated for those who understand that true elegance is never spoken — only felt.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Shop</div>
+        <ul class="footer-links">
+          <li><a href="collection.html">New Arrivals</a></li>
+          <li><a href="collection.html?cat=Dresses">Dresses</a></li>
+          <li><a href="collection.html?cat=Blazers">Blazers &amp; Suits</a></li>
+          <li><a href="collection.html?cat=Coats">Coats</a></li>
+          <li><a href="collection.html?cat=Bags">Bags</a></li>
+          <li><a href="collection.html?cat=Footwear">Footwear</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Support</div>
+        <ul class="footer-links">
+          <li><a href="#">Contact Us</a></li>
+          <li><a href="#">Sizing Guide</a></li>
+          <li><a href="#">Shipping Info</a></li>
+          <li><a href="#">Returns</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <ul class="footer-links">
+          <li><a href="#">About ALVA</a></li>
+          <li><a href="#">Sustainability</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copyright">&copy; 2026 ALVA. All rights reserved.</span>
+      <div class="footer-social">
+        <a href="#" aria-label="Instagram">
+          <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="#" aria-label="Pinterest">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.24 2.65 7.86 6.39 9.29-.09-.78-.17-1.98.03-2.83.19-.77 1.27-5.38 1.27-5.38s-.32-.65-.32-1.61c0-1.51.88-2.64 1.97-2.64.93 0 1.38.7 1.38 1.54 0 .94-.6 2.34-.91 3.64-.26 1.09.54 1.98 1.61 1.98 1.93 0 3.42-2.04 3.42-4.97 0-2.6-1.87-4.42-4.53-4.42-3.09 0-4.9 2.32-4.9 4.72 0 .93.36 1.93.8 2.48.09.11.1.2.07.31-.08.33-.26 1.09-.3 1.24-.05.2-.17.24-.38.15-1.41-.66-2.29-2.72-2.29-4.38 0-3.57 2.59-6.84 7.47-6.84 3.92 0 6.97 2.79 6.97 6.52 0 3.89-2.45 7.02-5.85 7.02-1.14 0-2.22-.59-2.59-1.29l-.7 2.63c-.25.98-.94 2.2-1.4 2.95.91.28 1.87.43 2.86.43 5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        </a>
+        <a href="#" aria-label="Twitter / X">
+          <svg viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/collection.js"></script>
+  <script>
+    /* Handle ?cat= URL parameter */
+    document.addEventListener('DOMContentLoaded', function() {
+      var params = new URLSearchParams(window.location.search);
+      var cat = params.get('cat');
+      if (cat) {
+        /* Trigger click on matching filter tab */
+        var tab = document.querySelector('.filter-tab[data-category="' + cat + '"]');
+        if (tab) tab.click();
+      }
+    });
+
+    /* Size tag toggle visual (since checkboxes are hidden) */
+    document.querySelectorAll('.tag').forEach(function(tag) {
+      tag.addEventListener('click', function() {
+        tag.classList.toggle('active');
+        var cb = tag.querySelector('input[type="checkbox"]');
+        if (cb) {
+          cb.checked = tag.classList.contains('active');
+          cb.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      });
+    });
+  </script>
+</body>
+</html>
