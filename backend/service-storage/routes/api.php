@@ -1,10 +1,19 @@
 <?php
 
-use App\Http\Controllers\UploadController;
-use App\Http\Middleware\InternalOnly;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(InternalOnly::class)->group(function () {
-    Route::post('/upload', [UploadController::class, 'upload']);
-    Route::delete('/delete', [UploadController::class, 'delete']);
-});
+// Load routes from all containers
+$containersPath = app_path('Containers');
+
+if (File::exists($containersPath)) {
+    $containers = File::directories($containersPath);
+
+    foreach ($containers as $container) {
+        $routesPath = $container . '/UI/API/Routes/api.php';
+
+        if (File::exists($routesPath)) {
+            require $routesPath;
+        }
+    }
+}
