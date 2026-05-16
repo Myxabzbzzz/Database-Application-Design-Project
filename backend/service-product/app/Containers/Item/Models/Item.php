@@ -4,6 +4,7 @@ namespace App\Containers\Item\Models;
 
 use App\Containers\Cart\Models\CartItem;
 use App\Containers\Designer\Models\Designer;
+use App\Containers\Item\Enums\ItemCategoryEnum;
 use App\Containers\Merchant\Filters\ItemFilters;
 use App\Containers\Order\Models\OrderItem;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -38,6 +39,7 @@ class Item extends Model
     {
         return [
             'price' => 'decimal:2',
+            'category' => ItemCategoryEnum::class,
             'stock_quantity' => 'integer',
             'is_signature' => 'boolean',
             'is_active' => 'boolean',

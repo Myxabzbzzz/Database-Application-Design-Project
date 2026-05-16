@@ -2,7 +2,9 @@
 
 namespace App\Containers\Item\UI\API\Requests;
 
+use App\Containers\Item\Enums\ItemCategoryEnum;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreItemRequest extends FormRequest
 {
@@ -28,7 +30,7 @@ class StoreItemRequest extends FormRequest
             'description' => 'nullable|string',
             'size' => 'nullable|string|max:50',
             'color' => 'nullable|string|max:50',
-            'category' => 'required|string|max:100',
+            'category' => ['required', Rule::enum(ItemCategoryEnum::class)],
             'designer_id' => 'nullable|exists:designers,id',
             'stock_quantity' => 'nullable|integer|min:0',
             'is_signature' => 'nullable|boolean',

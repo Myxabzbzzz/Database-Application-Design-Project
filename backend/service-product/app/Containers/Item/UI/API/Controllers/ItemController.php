@@ -2,12 +2,16 @@
 
 namespace App\Containers\Item\UI\API\Controllers;
 
+use App\Containers\Item\Enums\ItemCategoryEnum;
 use App\Containers\Item\Models\Item;
+use App\Containers\Item\UI\API\Requests\StoreItemRequest;
+use App\Containers\Item\UI\API\Requests\UpdateItemRequest;
 use App\Containers\Item\UI\API\Resources\ItemResource;
 use App\Ship\Parents\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Illuminate\Validation\Rule;
 
 class ItemController extends Controller
 {
@@ -44,21 +48,9 @@ class ItemController extends Controller
     /**
      * Store a newly created item in storage.
      */
-    public function store(Request $request): ItemResource
+    public function store(StoreItemRequest $request): ItemResource
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:items,slug',
-            'price' => 'required|numeric|min:1',
-            'description' => 'nullable|string',
-            'size' => 'nullable|string|max:50',
-            'color' => 'nullable|string|max:50',
-            'category' => 'required|string|max:100',
-            'designer_id' => 'nullable|exists:designers,id',
-            'stock_quantity' => 'nullable|integer|min:0',
-            'is_signature' => 'nullable|boolean',
-            'is_active' => 'nullable|boolean',
-        ]);
+        $validated = $request->validated();
 
         $item = Item::create($validated);
         $item->load(['designer', 'images']);
@@ -82,23 +74,11 @@ class ItemController extends Controller
     /**
      * Update the specified item in storage.
      */
-    public function update(Request $request, string $id): ItemResource
+    public function update(UpdateItemRequest $request, string $id): ItemResource
     {
         $item = Item::findOrFail($id);
 
-        $validated = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'slug' => 'sometimes|required|string|max:255|unique:items,slug,' . $id,
-            'price' => 'sometimes|required|numeric|min:0',
-            'description' => 'nullable|string',
-            'size' => 'nullable|string|max:50',
-            'color' => 'nullable|string|max:50',
-            'category' => 'sometimes|required|string|max:100',
-            'designer_id' => 'nullable|exists:designers,id',
-            'stock_quantity' => 'nullable|integer|min:0',
-            'is_signature' => 'nullable|boolean',
-            'is_active' => 'nullable|boolean',
-        ]);
+        $validated = $request->validated();
 
         $item->update($validated);
         $item->load(['designer', 'images']);
