@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Containers\User\UI\API\Controllers;
+namespace app\Containers\User\UI\API\Controllers;
 
+use App\Containers\User\Helpers\FailedLoginTracker;
 use App\Containers\User\Mail\VerifyEmail;
 use App\Containers\User\Models\User;
 use App\Ship\Parents\Controller;
@@ -115,9 +116,17 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
+        $ip = $request->ip();
+
         if (! $token = $this->guard()->attempt($credentials)) {
+            // Record failed login attempt
+            FailedLoginTracker::record($ip);
+
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
+
+        // Clear failed login attempts on successful login
+        FailedLoginTracker::clear($ip);
 
         return response()->json(['token' => $token, 'token_type' => 'bearer']);
     }
