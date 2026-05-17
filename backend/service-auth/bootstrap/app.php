@@ -17,4 +17,15 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(fn ($request) => $request->is('api/*'));
-    })->create();
+    })
+    ->withSchedule(function ($schedule) {
+        $schedule->command('users:delete-unverified --days=7')
+            ->weekly()
+            ->sundays()
+            ->at('03:00')
+            ->withoutOverlapping(10)
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/users-delete-unverified.log'));
+    })
+
+    ->create();

@@ -1,13 +1,28 @@
 <?php
 
-namespace App\Containers\User\Models;
+namespace app\Containers\User\Models;
 
+use Carbon\Carbon;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string $password
+ * @property string $crole
+ * @property Carbon $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static Builder|User query()
+ * @method static Builder|User newModelQuery()
+ * @method static Builder|User newQuery()
+ */
 
 class User extends Authenticatable implements JWTSubject
 {
