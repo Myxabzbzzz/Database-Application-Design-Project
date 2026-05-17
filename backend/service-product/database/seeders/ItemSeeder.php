@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 class ItemSeeder extends Seeder
 {
-    private string $imgBase = 'http://localhost/storage/storage/figma/';
+    private string $imgBase = '';
 
     /* 57 product PNGs from Figma export (512×512) */
     private array $imgs = [
@@ -80,6 +80,8 @@ class ItemSeeder extends Seeder
 
     public function run(): void
     {
+        $this->imgBase = rtrim(env('STORAGE_BASE_URL', '/storage/storage'), '/') . '/figma/';
+
         $designers = DB::table('designers')->pluck('id', 'slug');
 
         $catalogue = [

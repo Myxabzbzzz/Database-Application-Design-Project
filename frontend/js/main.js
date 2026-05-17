@@ -3,15 +3,15 @@
    Global utilities: cart, wishlist, nav, toast
    ========================================================= */
 
-window.STORAGE_BASE = 'http://localhost/storage/storage';
-window.API_BASE     = 'http://localhost/api/products';
+window.STORAGE_BASE = '/storage/storage';
+window.API_BASE     = '/api/products';
 
 /* =========================================================
    CART UTILITIES
    Logged-in users  → synced with /api/products/cart (DB)
    Guest users      → localStorage 'alva_cart_guest'
    ========================================================= */
-var _CART_API = 'http://localhost/api/products/cart';
+var _CART_API = '/api/products/cart';
 
 function _token() { return localStorage.getItem('alva_token'); }
 

@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var contentEl  = document.getElementById('profile-content');
   var errorEl    = document.getElementById('profile-error');
 
-  fetch('http://localhost/api/auth/me', {
+  fetch('/api/auth/me', {
     method: 'GET',
     headers: {
       'Accept': 'application/json',
@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
         unverifiedBtn.textContent = 'Sending…';
         // save email so verify.html can display it
         localStorage.setItem('alva_pending_email', email);
-        fetch('http://localhost/api/auth/email/resend', {
+        fetch('/api/auth/email/resend', {
           method: 'POST',
           headers: {
             'Accept': 'application/json',
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   document.getElementById('btn-logout').addEventListener('click', function () {
-    fetch('http://localhost/api/auth/logout', {
+    fetch('/api/auth/logout', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',

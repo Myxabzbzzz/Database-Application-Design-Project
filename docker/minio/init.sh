@@ -18,6 +18,10 @@ if [ -f "$FIG" ]; then
 
     if [ -d "$TMP/images" ] && [ "$(ls -A "$TMP/images" 2>/dev/null)" ]; then
         echo "Uploading figma images to MinIO..."
+        # Rename all extracted files to add .png extension before uploading
+        for f in "$TMP/images"/*; do
+            [ -f "$f" ] && mv "$f" "${f}.png"
+        done
         mc cp --recursive "$TMP/images/" "local/$MINIO_BUCKET/figma/"
         echo "Done — $(ls "$TMP/images" | wc -l | tr -d ' ') images uploaded to figma/"
 

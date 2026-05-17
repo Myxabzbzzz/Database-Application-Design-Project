@@ -1,6 +1,6 @@
 (function () {
   var STRIPE_PK = 'pk_test_51TXpf3CiuvnINDTr2JTbNwQDkItrwvwtE7u2N0JaTxQAE6cUT1dbFUasbbanU31dHwkvs1xiZKMwencSAMAMchgq00HLhMvhlx';
-  var API_BASE  = 'http://localhost/api/payments';
+  var API_BASE  = '/api/payments';
 
   var token = localStorage.getItem('alva_token');
 

@@ -8,10 +8,12 @@ use Illuminate\Support\Str;
 
 class DesignerSeeder extends Seeder
 {
-    private string $imgBase = 'http://localhost/storage/storage/figma/';
+    private string $imgBase = '';
 
     public function run(): void
     {
+        $this->imgBase = rtrim(env('STORAGE_BASE_URL', '/storage/storage'), '/') . '/figma/';
+
         $designers = [
             [
                 'name'        => 'MAISON NOIR',

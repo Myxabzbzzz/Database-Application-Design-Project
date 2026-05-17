@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       setLoading(btnSignIn, true);
 
-      fetch('http://localhost/api/auth/login', {
+      fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ email: email, password: password })
@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       setLoading(btnSignUp, true);
 
-      fetch('http://localhost/api/auth/register', {
+      fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({

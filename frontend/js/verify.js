@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     setLoading(true);
 
-    fetch('http://localhost/api/auth/email/verify', {
+    fetch('/api/auth/email/verify', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
   resendBtn.addEventListener('click', function () {
     clearError();
 
-    fetch('http://localhost/api/auth/email/resend', {
+    fetch('/api/auth/email/resend', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

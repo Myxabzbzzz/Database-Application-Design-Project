@@ -2,7 +2,7 @@
    ALVA – designers.js
    ========================================================= */
 
-var API = 'http://localhost/api/products';
+var API = '/api/products';
 
 document.addEventListener('DOMContentLoaded', function () {
 
