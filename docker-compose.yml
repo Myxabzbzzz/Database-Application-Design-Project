@@ -229,6 +229,7 @@ services:
       - "80:80"
     volumes:
       - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./frontend:/usr/share/nginx/html:ro
     depends_on:
       service-auth:
         condition: service_healthy
@@ -240,16 +241,6 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
-
-  # ─── Frontend ────────────────────────────────────────────────────────────────
-
-  web-app:
-    image: nginx:alpine
-    restart: unless-stopped
-    ports:
-      - "3000:80"
-    volumes:
-      - ./frontend:/usr/share/nginx/html:ro
 
 volumes:
   postgres_data:
