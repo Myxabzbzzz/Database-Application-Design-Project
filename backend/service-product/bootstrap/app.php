@@ -23,5 +23,11 @@ return Application::configure(basePath: dirname(__DIR__))
             ->withoutOverlapping(10)
             ->runInBackground()
             ->appendOutputTo(storage_path('logs/orders-cancel-pending.log'));
+
+        $schedule->command('carts:send-abandoned-reminders --min-hours=24 --max-hours=48')
+            ->dailyAt('10:00')
+            ->withoutOverlapping(10)
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/carts-abandoned-reminders.log'));
     })
     ->create();
