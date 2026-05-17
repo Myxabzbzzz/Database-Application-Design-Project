@@ -1,27 +1,32 @@
 <?php
 
-namespace App\Containers\Order\Models;
+namespace app\Containers\Order\Models;
 
 use App\Containers\User\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable([
-    'user_id',
-    'status',
-    'payment_status',
-    'subtotal',
-    'delivery_price',
-    'total_price',
-    'shipping_address'
-])]
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property string $status
+ * @property float $subtotal
+ * @property float $delivery_price
+ * @property float $total_price
+ * @property string $shipping_address
+ * @property Carbon $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static Builder|Order query()
+ * @method static Builder|Order newModelQuery()
+ * @method static Builder|Order newQuery()
+ */
 class Order extends Model
 {
-    use HasFactory;
-
     public $incrementing = false;
     protected $keyType = 'string';
 

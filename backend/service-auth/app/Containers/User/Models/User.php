@@ -16,7 +16,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
  * @property string $name
  * @property string $email
  * @property string $password
- * @property string $crole
+ * @property string $role
  * @property Carbon $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static Builder|User query()

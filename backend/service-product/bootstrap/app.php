@@ -16,4 +16,12 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
-    })->create();
+    })
+    ->withSchedule(function ($schedule) {
+        $schedule->command('orders:cancel-pending --hours=24')
+            ->everySixHours()
+            ->withoutOverlapping(10)
+            ->runInBackground()
+            ->appendOutputTo(storage_path('logs/orders-cancel-pending.log'));
+    })
+    ->create();
