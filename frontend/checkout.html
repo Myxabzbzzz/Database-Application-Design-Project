@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALVA — Checkout</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav" id="main-nav">
+    <a href="index.html" class="nav-logo">ALVA</a>
+    <div class="nav-links">
+      <a href="collection.html">Collections</a>
+      <a href="collection.html">New Arrivals</a>
+      <a href="collection.html">Designers</a>
+      <a href="index.html#about">About</a>
+    </div>
+    <div class="nav-icons">
+      <button class="nav-icon-btn" aria-label="Search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <a href="login.html" class="nav-icon-btn" aria-label="Account">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </a>
+      <a href="cart.html" class="nav-icon-btn" aria-label="Cart">
+        <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-count"></span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- CHECKOUT PAGE -->
+  <main style="min-height:100vh;padding:calc(var(--nav-height) + var(--space-2xl)) var(--space-xl) var(--space-2xl);">
+
+    <!-- Auth guard message -->
+    <div id="auth-guard" style="display:none;text-align:center;padding:var(--space-2xl) 0;">
+      <h2 style="font-family:var(--font-serif);font-size:2rem;margin-bottom:var(--space-md);">Sign in to continue</h2>
+      <p style="color:var(--text-3);margin-bottom:var(--space-xl);">You need an account to complete your purchase.</p>
+      <a href="login.html" class="btn">Sign In</a>
+    </div>
+
+    <!-- Success state -->
+    <div id="checkout-success" style="display:none;text-align:center;padding:var(--space-2xl) 0;">
+      <div style="font-size:3rem;margin-bottom:var(--space-lg);">✓</div>
+      <h2 style="font-family:var(--font-serif);font-size:2.5rem;margin-bottom:var(--space-md);">Order Confirmed</h2>
+      <p style="color:var(--text-3);margin-bottom:4px;">Thank you for your purchase.</p>
+      <p style="color:var(--text-3);margin-bottom:var(--space-xl);">Order <strong id="success-order-id" style="color:var(--text-1);"></strong></p>
+      <a href="collection.html" class="btn">Continue Shopping</a>
+    </div>
+
+    <!-- Checkout form -->
+    <div id="checkout-form-wrapper" style="display:none;max-width:1100px;margin:0 auto;">
+
+      <h1 style="font-family:var(--font-serif);font-size:2.5rem;font-weight:400;margin-bottom:var(--space-2xl);">Checkout</h1>
+
+      <div style="display:grid;grid-template-columns:1fr 420px;gap:var(--space-2xl);align-items:start;">
+
+        <!-- Left: Contact + Payment -->
+        <div>
+          <!-- Contact -->
+          <div style="margin-bottom:var(--space-2xl);">
+            <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-3);margin-bottom:var(--space-lg);">Contact</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md);margin-bottom:var(--space-md);">
+              <div class="form-group">
+                <label class="form-label" for="co-name">Full Name</label>
+                <input class="form-input" type="text" id="co-name" placeholder="Jane Doe" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="co-email">Email</label>
+                <input class="form-input" type="email" id="co-email" placeholder="jane@example.com" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment -->
+          <div>
+            <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-3);margin-bottom:var(--space-lg);">Payment</div>
+
+            <div style="border:1px solid var(--border);border-radius:4px;padding:var(--space-md) var(--space-lg);margin-bottom:var(--space-md);">
+              <div id="card-element"></div>
+            </div>
+
+            <div id="card-error" style="color:#e05c5c;font-size:0.82rem;min-height:1.2em;margin-bottom:var(--space-md);"></div>
+
+            <button class="btn btn-full" id="pay-btn" style="font-size:0.9rem;padding:var(--space-lg);">
+              <span id="pay-btn-text">Pay Now</span>
+              <span id="pay-btn-spinner" style="display:none;">Processing…</span>
+            </button>
+
+            <p style="font-size:0.72rem;color:var(--text-3);text-align:center;margin-top:var(--space-md);">
+              Secured by Stripe. We never store your card details.
+            </p>
+          </div>
+        </div>
+
+        <!-- Right: Order Summary -->
+        <div style="border:1px solid var(--border);padding:var(--space-xl);position:sticky;top:calc(var(--nav-height) + var(--space-lg));">
+          <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-3);margin-bottom:var(--space-lg);">Order Summary</div>
+
+          <div id="summary-items" style="margin-bottom:var(--space-lg);"></div>
+
+          <div style="border-top:1px solid var(--border);padding-top:var(--space-lg);">
+            <div style="display:flex;justify-content:space-between;margin-bottom:var(--space-sm);font-size:0.85rem;color:var(--text-3);">
+              <span>Subtotal</span>
+              <span id="summary-subtotal">$0.00</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:var(--space-sm);font-size:0.85rem;color:var(--text-3);">
+              <span>Shipping</span>
+              <span style="color:var(--gold);">Free</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:var(--space-md);font-size:1rem;font-weight:600;">
+              <span>Total</span>
+              <span id="summary-total">$0.00</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-bottom">
+      <span class="footer-copyright">&copy; 2026 ALVA. All rights reserved.</span>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/checkout.js"></script>
+</body>
+</html>

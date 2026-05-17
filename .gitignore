@@ -14,3 +14,9 @@ Thumbs.db
 
 # Docker env (contains secrets)
 .env
+
+# Local AI context (not for repo)
+CLAUDE.md
+
+# Frontend assets — served from MinIO, not committed to git
+frontend/images/
