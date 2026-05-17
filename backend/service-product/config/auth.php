@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\User;
+use App\Containers\User\Models\User;
 
 return [
 
@@ -42,6 +42,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'api' => [
+            'driver' => 'jwt',
+            'provider' => 'users',
+        ],
     ],
 
     /*
@@ -63,7 +67,7 @@ return [
 
     'providers' => [
         'users' => [
-            'driver' => 'eloquent',
+            'driver' => 'jwt-stub',
             'model' => env('AUTH_MODEL', User::class),
         ],
 

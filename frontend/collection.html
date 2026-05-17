@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ALVA — Collection</title>
   <link rel="stylesheet" href="style.css">
@@ -33,8 +34,7 @@
     <a href="index.html" class="nav-logo">ALVA</a>
     <div class="nav-links">
       <a href="collection.html">Collections</a>
-      <a href="collection.html">New Arrivals</a>
-      <a href="collection.html">Designers</a>
+      <a href="designers.html">Designers</a>
       <a href="index.html#about">About</a>
     </div>
     <div class="nav-icons">
@@ -44,7 +44,7 @@
       <button class="nav-icon-btn" aria-label="Wishlist">
         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
       </button>
-      <a href="login.html" class="nav-icon-btn" aria-label="Account">
+      <a href="profile.html" class="nav-icon-btn" aria-label="Account">
         <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       </a>
       <a href="cart.html" class="nav-icon-btn" aria-label="Cart">
@@ -72,16 +72,8 @@
 
   <!-- ===================== FILTER BAR ===================== -->
   <div class="filter-bar">
-    <div class="filter-tabs">
+    <div class="filter-tabs" id="filter-tabs">
       <button class="filter-tab active" data-category="All">All</button>
-      <button class="filter-tab" data-category="Dresses">Dresses</button>
-      <button class="filter-tab" data-category="Blazers">Blazers</button>
-      <button class="filter-tab" data-category="Coats">Coats</button>
-      <button class="filter-tab" data-category="Knitwear">Knitwear</button>
-      <button class="filter-tab" data-category="Trousers">Trousers</button>
-      <button class="filter-tab" data-category="Bags">Bags</button>
-      <button class="filter-tab" data-category="Footwear">Footwear</button>
-      <button class="filter-tab" data-category="Accessories">Accessories</button>
     </div>
     <div class="filter-bar-right">
       <select class="sort-select" id="sort-select" aria-label="Sort products">
@@ -89,7 +81,6 @@
         <option value="newest">Newest</option>
         <option value="price-asc">Price: Low to High</option>
         <option value="price-desc">Price: High to Low</option>
-        <option value="rating">Top Rated</option>
       </select>
       <button class="filter-toggle-btn" id="filter-toggle" aria-label="Toggle filters">
         <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/></svg>
@@ -104,72 +95,14 @@
     <!-- Sidebar -->
     <aside class="sidebar-filter" id="sidebar-filter">
 
-      <!-- Category -->
+      <!-- Category (populated by collection.js) -->
       <div class="sidebar-section">
         <div class="sidebar-section-title">Category</div>
-        <label class="sidebar-option">
-          <input type="radio" class="category-radio" name="cat" value="All" checked>
-          <span class="sidebar-option-label">All</span>
-        </label>
-        <label class="sidebar-option">
-          <input type="radio" class="category-radio" name="cat" value="Dresses">
-          <span class="sidebar-option-label">Dresses</span>
-        </label>
-        <label class="sidebar-option">
-          <input type="radio" class="category-radio" name="cat" value="Blazers">
-          <span class="sidebar-option-label">Blazers &amp; Suits</span>
-        </label>
-        <label class="sidebar-option">
-          <input type="radio" class="category-radio" name="cat" value="Coats">
-          <span class="sidebar-option-label">Coats</span>
-        </label>
-        <label class="sidebar-option">
-          <input type="radio" class="category-radio" name="cat" value="Knitwear">
-          <span class="sidebar-option-label">Knitwear</span>
-        </label>
-        <label class="sidebar-option">
-          <input type="radio" class="category-radio" name="cat" value="Trousers">
-          <span class="sidebar-option-label">Trousers</span>
-        </label>
-        <label class="sidebar-option">
-          <input type="radio" class="category-radio" name="cat" value="Bags">
-          <span class="sidebar-option-label">Bags</span>
-        </label>
-        <label class="sidebar-option">
-          <input type="radio" class="category-radio" name="cat" value="Footwear">
-          <span class="sidebar-option-label">Footwear</span>
-        </label>
-        <label class="sidebar-option">
-          <input type="radio" class="category-radio" name="cat" value="Accessories">
-          <span class="sidebar-option-label">Accessories</span>
-        </label>
-      </div>
-
-      <!-- Size -->
-      <div class="sidebar-section">
-        <div class="sidebar-section-title">Size</div>
-        <div class="tag-list">
-          <label class="tag"><input type="checkbox" class="size-checkbox" value="XS" style="display:none">XS</label>
-          <label class="tag"><input type="checkbox" class="size-checkbox" value="S" style="display:none">S</label>
-          <label class="tag"><input type="checkbox" class="size-checkbox" value="M" style="display:none">M</label>
-          <label class="tag"><input type="checkbox" class="size-checkbox" value="L" style="display:none">L</label>
-          <label class="tag"><input type="checkbox" class="size-checkbox" value="XL" style="display:none">XL</label>
-          <label class="tag"><input type="checkbox" class="size-checkbox" value="One Size" style="display:none">One Size</label>
-        </div>
-      </div>
-
-      <!-- Color -->
-      <div class="sidebar-section">
-        <div class="sidebar-section-title">Color</div>
-        <div class="color-swatches">
-          <div class="color-swatch" data-color="black" style="background:#1a1a1a;" title="Black"></div>
-          <div class="color-swatch" data-color="white" style="background:#f0ebe4;border:1px solid #2e2e2e;" title="White / Cream"></div>
-          <div class="color-swatch" data-color="gold" style="background:#c9a870;" title="Gold"></div>
-          <div class="color-swatch" data-color="grey" style="background:#5a5a5a;" title="Grey"></div>
-          <div class="color-swatch" data-color="beige" style="background:#c9a870;" title="Beige"></div>
-          <div class="color-swatch" data-color="navy" style="background:#1a2640;" title="Navy"></div>
-          <div class="color-swatch" data-color="green" style="background:#2d4a3e;" title="Green"></div>
-          <div class="color-swatch" data-color="brown" style="background:#5a3a2a;" title="Brown"></div>
+        <div id="sidebar-categories">
+          <label class="sidebar-option">
+            <input type="radio" class="category-radio" name="cat" value="All" checked>
+            <span class="sidebar-option-label">All</span>
+          </label>
         </div>
       </div>
 
@@ -180,32 +113,6 @@
           <input type="number" id="price-min" placeholder="Min" min="0" step="50">
           <span class="price-range-sep">–</span>
           <input type="number" id="price-max" placeholder="Max" min="0" step="50">
-        </div>
-      </div>
-
-      <!-- Rating -->
-      <div class="sidebar-section">
-        <div class="sidebar-section-title">Rating</div>
-        <div class="star-filter">
-          <label class="star-option">
-            <input type="radio" class="rating-radio" name="rating" value="4.5">
-            <span class="star-option-stars">★★★★★</span>
-            <span class="star-option-label">4.5 &amp; up</span>
-          </label>
-          <label class="star-option">
-            <input type="radio" class="rating-radio" name="rating" value="4">
-            <span class="star-option-stars">★★★★☆</span>
-            <span class="star-option-label">4.0 &amp; up</span>
-          </label>
-          <label class="star-option">
-            <input type="radio" class="rating-radio" name="rating" value="3">
-            <span class="star-option-stars">★★★☆☆</span>
-            <span class="star-option-label">3.0 &amp; up</span>
-          </label>
-          <label class="star-option">
-            <input type="radio" class="rating-radio" name="rating" value="0" checked>
-            <span class="star-option-label" style="color:var(--text-3)">Any rating</span>
-          </label>
         </div>
       </div>
 
@@ -239,7 +146,6 @@
       <div>
         <div class="footer-col-title">Shop</div>
         <ul class="footer-links">
-          <li><a href="collection.html">New Arrivals</a></li>
           <li><a href="collection.html?cat=Dresses">Dresses</a></li>
           <li><a href="collection.html?cat=Blazers">Blazers &amp; Suits</a></li>
           <li><a href="collection.html?cat=Coats">Coats</a></li>
@@ -286,29 +192,5 @@
 
   <script src="js/main.js"></script>
   <script src="js/collection.js"></script>
-  <script>
-    /* Handle ?cat= URL parameter */
-    document.addEventListener('DOMContentLoaded', function() {
-      var params = new URLSearchParams(window.location.search);
-      var cat = params.get('cat');
-      if (cat) {
-        /* Trigger click on matching filter tab */
-        var tab = document.querySelector('.filter-tab[data-category="' + cat + '"]');
-        if (tab) tab.click();
-      }
-    });
-
-    /* Size tag toggle visual (since checkboxes are hidden) */
-    document.querySelectorAll('.tag').forEach(function(tag) {
-      tag.addEventListener('click', function() {
-        tag.classList.toggle('active');
-        var cb = tag.querySelector('input[type="checkbox"]');
-        if (cb) {
-          cb.checked = tag.classList.contains('active');
-          cb.dispatchEvent(new Event('change', { bubbles: true }));
-        }
-      });
-    });
-  </script>
 </body>
 </html>

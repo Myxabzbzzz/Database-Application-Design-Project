@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALVA — Designers</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .designers-page {
+      min-height: 100vh;
+      padding: calc(var(--nav-height) + var(--space-3xl)) var(--space-xl) var(--space-3xl);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .page-heading {
+      font-family: var(--font-serif);
+      font-size: 2.8rem;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: var(--space-sm);
+    }
+
+    .page-subheading {
+      font-size: 0.85rem;
+      color: var(--text-3);
+      margin-bottom: var(--space-3xl);
+      letter-spacing: 0.04em;
+    }
+
+    /* ---- Designers grid ---- */
+    .designers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--space-xl);
+    }
+
+    .designer-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color var(--transition), transform var(--transition);
+    }
+
+    .designer-card:hover {
+      border-color: var(--border-light);
+      transform: translateY(-2px);
+    }
+
+    .designer-card-banner {
+      height: 140px;
+      background: var(--surface-2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .designer-card-banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .designer-card-banner-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--surface-2) 0%, var(--surface-3, #1a1a1a) 100%);
+    }
+
+    .designer-card-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 2px solid var(--bg);
+      background: var(--surface-2);
+      overflow: hidden;
+      position: absolute;
+      bottom: -28px;
+      left: var(--space-lg);
+    }
+
+    .designer-card-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .designer-card-avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-serif);
+      font-size: 1.4rem;
+      color: var(--text-3);
+    }
+
+    .designer-card-body {
+      padding: calc(var(--space-xl) + 12px) var(--space-lg) var(--space-lg);
+    }
+
+    .designer-card-name {
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .designer-card-desc {
+      font-size: 0.78rem;
+      color: var(--text-3);
+      line-height: 1.5;
+      margin-bottom: var(--space-md);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .designer-card-meta {
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    /* ---- Back button ---- */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-2);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin-bottom: var(--space-2xl);
+      transition: color var(--transition);
+    }
+
+    .back-btn:hover { color: var(--text); }
+
+    .back-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ---- Designer detail header ---- */
+    .designer-detail-banner {
+      height: 220px;
+      background: var(--surface-2);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: var(--space-xl);
+      position: relative;
+    }
+
+    .designer-detail-banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .designer-detail-header {
+      display: flex;
+      align-items: flex-end;
+      gap: var(--space-xl);
+      margin-bottom: var(--space-2xl);
+      padding-bottom: var(--space-2xl);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .designer-detail-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 2px solid var(--border-light);
+      background: var(--surface-2);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .designer-detail-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .designer-detail-avatar-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-serif);
+      font-size: 2rem;
+      color: var(--text-3);
+    }
+
+    .designer-detail-name {
+      font-family: var(--font-serif);
+      font-size: 2rem;
+      font-weight: 400;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .designer-detail-desc {
+      font-size: 0.85rem;
+      color: var(--text-3);
+      line-height: 1.6;
+      max-width: 600px;
+    }
+
+    /* ---- Items grid (same as product cards) ---- */
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: var(--space-xl);
+    }
+
+    /* ---- States ---- */
+    .state-loading,
+    .state-empty {
+      text-align: center;
+      padding: var(--space-3xl) 0;
+      color: var(--text-3);
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+    }
+
+    .state-empty p:first-child {
+      font-family: var(--font-serif);
+      font-size: 1.4rem;
+      color: var(--text-2);
+      margin-bottom: var(--space-md);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav" id="main-nav">
+    <a href="index.html" class="nav-logo">ALVA</a>
+    <div class="nav-links">
+      <a href="collection.html">Collections</a>
+      <a href="designers.html" style="color:var(--text);">Designers</a>
+      <a href="index.html#about">About</a>
+    </div>
+    <div class="nav-icons">
+      <button class="nav-icon-btn" aria-label="Search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <a href="profile.html" class="nav-icon-btn" aria-label="Account">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </a>
+      <a href="cart.html" class="nav-icon-btn" aria-label="Cart">
+        <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-count"></span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="designers-page">
+
+    <!-- LIST VIEW -->
+    <div id="view-list">
+      <h1 class="page-heading">Designers</h1>
+      <p class="page-subheading">Discover the houses and creators behind every piece.</p>
+
+      <div id="list-loading" class="state-loading">Loading designers…</div>
+      <div id="designers-grid" class="designers-grid" style="display:none;"></div>
+      <div id="list-empty" class="state-empty" style="display:none;">
+        <p>No designers yet</p>
+        <p>Check back soon.</p>
+      </div>
+    </div>
+
+    <!-- DETAIL VIEW -->
+    <div id="view-detail" style="display:none;">
+      <button class="back-btn" id="btn-back">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        All Designers
+      </button>
+
+      <div id="detail-banner" class="designer-detail-banner" style="display:none;"></div>
+
+      <div class="designer-detail-header">
+        <div class="designer-detail-avatar" id="detail-avatar"></div>
+        <div>
+          <div class="designer-detail-name" id="detail-name">—</div>
+          <div class="designer-detail-desc" id="detail-desc"></div>
+        </div>
+      </div>
+
+      <div id="detail-items-loading" class="state-loading">Loading items…</div>
+      <div id="detail-items-grid" class="items-grid" style="display:none;"></div>
+      <div id="detail-items-empty" class="state-empty" style="display:none;">
+        <p>No items yet</p>
+        <p>This designer hasn't listed any pieces.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="js/main.js"></script>
+  <script src="js/designers.js"></script>
+</body>
+</html>

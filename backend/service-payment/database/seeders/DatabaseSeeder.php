@@ -2,24 +2,33 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        /* Seed a test user so payment flows can be tested locally.
+           The real users are synced from service-auth on first order. */
+        DB::table('users')->upsert(
+            [
+                [
+                    'id'                => '01JTEST000000000000000001A',
+                    'name'              => 'Test User',
+                    'email'             => 'test@example.com',
+                    'password'          => Hash::make('password'),
+                    'email_verified_at' => now(),
+                    'created_at'        => now(),
+                    'updated_at'        => now(),
+                ],
+            ],
+            ['email'],
+            ['name', 'updated_at']
+        );
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        $this->command?->info('Payment DB seeded.');
     }
 }

@@ -1,263 +1,204 @@
 /* =========================================================
    ALVA – product.js
-   Product detail page logic
+   Fetches item from API by ULID, renders detail page
    ========================================================= */
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
 
-  var PRODUCTS = window.PRODUCTS || [];
+  var API = window.API_BASE;
+  var id  = new URLSearchParams(window.location.search).get('id');
 
-  /* ---- Read URL param ---- */
-  var params  = new URLSearchParams(window.location.search);
-  var id      = parseInt(params.get('id')) || 1;
-  var product = PRODUCTS.find(function(p) { return p.id === id; });
+  if (!id) { window.location.href = 'collection.html'; return; }
 
-  if (!product) {
-    product = PRODUCTS[0];
-  }
-
-  /* ---- State ---- */
   var selectedSize  = null;
-  var selectedColor = product.colors && product.colors.length > 0 ? product.colors[0] : null;
+  var selectedColor = null;
   var quantity      = 1;
+  var item          = null;
 
-  /* ---- Populate page ---- */
-  function populatePage() {
-    /* Breadcrumb */
-    var bcName = document.getElementById('bc-product-name');
-    if (bcName) bcName.textContent = product.name;
+  /* =========================================================
+     LOAD ITEM
+     ========================================================= */
+  fetch(API + '/items/' + id, { headers: { 'Accept': 'application/json' } })
+    .then(function (res) {
+      if (!res.ok) throw new Error('not found');
+      return res.json();
+    })
+    .then(function (data) {
+      item = data.data || data;
+      populatePage(item);
+      loadRelated(item.category, item.id);
+    })
+    .catch(function () {
+      window.location.href = 'collection.html';
+    });
 
-    /* Brand */
-    var brandEl = document.getElementById('product-brand');
-    if (brandEl) brandEl.textContent = product.brand;
+  /* =========================================================
+     POPULATE PAGE
+     ========================================================= */
+  function populatePage(p) {
+    var brand = (p.designer && p.designer.name) ? p.designer.name : '';
+    var price = '$' + parseFloat(p.price).toLocaleString('en-US', { minimumFractionDigits: 0 });
+    var images = (p.images && p.images.length) ? p.images : [];
+    var mainImg = images[0] ? images[0].url : 'https://placehold.co/600x800/1a1a1a/555?text=No+Image';
 
-    /* Name */
-    var nameEl = document.getElementById('product-name');
-    if (nameEl) nameEl.textContent = product.name;
-
-    /* Price */
-    var priceEl = document.getElementById('product-price');
-    if (priceEl) priceEl.textContent = '$' + product.price.toLocaleString('en-US');
+    setText('bc-product-name', p.name);
+    setText('product-brand',   brand);
+    setText('product-name',    p.name);
+    setText('product-price',   price);
 
     var oldPriceEl = document.getElementById('product-price-old');
-    if (oldPriceEl) {
-      if (product.oldPrice) {
-        oldPriceEl.textContent = '$' + product.oldPrice.toLocaleString('en-US');
-        oldPriceEl.style.display = '';
+    if (oldPriceEl) oldPriceEl.style.display = 'none';
+
+    /* hide rating row since we don't store ratings */
+    var ratingEl = document.querySelector('.product-rating');
+    if (ratingEl) ratingEl.style.display = 'none';
+
+    /* description */
+    var descEl = document.querySelector('.product-desc');
+    if (descEl) descEl.textContent = p.description || '';
+
+    /* main image */
+    var mainImgEl = document.getElementById('main-product-image');
+    if (mainImgEl) { mainImgEl.src = mainImg; mainImgEl.alt = p.name; }
+
+    /* thumbnails */
+    var thumbsEl = document.getElementById('product-thumbs');
+    if (thumbsEl) {
+      thumbsEl.innerHTML = images.slice(0, 4).map(function (img, i) {
+        return '<div class="product-thumb' + (i === 0 ? ' active' : '') + '" data-src="' + img.url + '">' +
+          '<img src="' + img.url + '" alt="' + escHtml(p.name) + '" loading="lazy">' +
+          '</div>';
+      }).join('');
+      thumbsEl.querySelectorAll('.product-thumb').forEach(function (thumb) {
+        thumb.addEventListener('click', function () {
+          thumbsEl.querySelectorAll('.product-thumb').forEach(function (t) { t.classList.remove('active'); });
+          thumb.classList.add('active');
+          if (mainImgEl) mainImgEl.src = thumb.dataset.src;
+        });
+      });
+    }
+
+    /* size — single string from DB */
+    var sizeEl = document.getElementById('size-selector');
+    if (sizeEl) {
+      if (p.size) {
+        sizeEl.innerHTML = '<button class="size-btn active" data-size="' + p.size + '">' + p.size + '</button>';
+        selectedSize = p.size;
       } else {
-        oldPriceEl.style.display = 'none';
+        sizeEl.innerHTML = '<span style="color:var(--text-3);font-size:0.8rem;">One Size</span>';
+        selectedSize = 'One Size';
       }
     }
 
-    /* Rating */
-    var starsEl = document.getElementById('product-stars');
-    if (starsEl) starsEl.textContent = starsHTML(product.rating);
-
-    var reviewsEl = document.getElementById('product-reviews');
-    if (reviewsEl) reviewsEl.textContent = '(' + product.reviews + ' reviews)';
-
-    /* Main image */
-    var mainImg = document.getElementById('main-product-image');
-    if (mainImg) {
-      mainImg.src = product.image;
-      mainImg.alt = product.name;
+    /* color */
+    var colorEl = document.getElementById('color-selector');
+    if (colorEl) {
+      if (p.color) {
+        colorEl.innerHTML = '<div class="color-swatch active" style="background:' + escHtml(p.color) + ';" title="' + escHtml(p.color) + '"></div>';
+        selectedColor = p.color;
+      } else {
+        colorEl.innerHTML = '';
+      }
     }
 
-    /* Thumbnails */
-    var thumbsContainer = document.getElementById('product-thumbs');
-    if (thumbsContainer) {
-      var thumbImages = getThumbs(product);
-      thumbsContainer.innerHTML = thumbImages.map(function(src, i) {
-        return [
-          '<div class="product-thumb' + (i === 0 ? ' active' : '') + '" data-src="' + src + '">',
-            '<img src="' + src + '" alt="Thumbnail ' + (i+1) + '" loading="lazy">',
-          '</div>'
-        ].join('');
-      }).join('');
-
-      thumbsContainer.querySelectorAll('.product-thumb').forEach(function(thumb) {
-        thumb.addEventListener('click', function() {
-          thumbsContainer.querySelectorAll('.product-thumb').forEach(function(t) {
-            t.classList.remove('active');
-          });
-          thumb.classList.add('active');
-          if (mainImg) {
-            mainImg.src = thumb.dataset.src;
-          }
-        });
+    /* wishlist button */
+    var wishBtn = document.getElementById('wishlist-btn');
+    if (wishBtn) {
+      wishBtn.classList.toggle('active', isWishlisted(p.id));
+      wishBtn.addEventListener('click', function () {
+        var added = toggleWishlist(p.id);
+        wishBtn.classList.toggle('active', added);
+        showToast(added ? 'Added to wishlist' : 'Removed from wishlist');
       });
     }
 
-    /* Sizes */
-    var sizeContainer = document.getElementById('size-selector');
-    if (sizeContainer) {
-      sizeContainer.innerHTML = product.sizes.map(function(sz) {
-        return '<button class="size-btn" data-size="' + sz + '">' + sz + '</button>';
-      }).join('');
-
-      sizeContainer.querySelectorAll('.size-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          sizeContainer.querySelectorAll('.size-btn').forEach(function(b) {
-            b.classList.remove('active');
-          });
-          btn.classList.add('active');
-          selectedSize = btn.dataset.size;
-        });
-      });
-    }
-
-    /* Colors */
-    var colorContainer = document.getElementById('color-selector');
-    if (colorContainer && product.colors && product.colors.length > 0) {
-      colorContainer.innerHTML = product.colors.map(function(clr, i) {
-        return [
-          '<div class="color-swatch' + (i === 0 ? ' active' : '') + '"',
-            ' style="background:' + clr + ';"',
-            ' data-color="' + clr + '"',
-            ' title="' + clr + '">',
-          '</div>'
-        ].join('');
-      }).join('');
-
-      colorContainer.querySelectorAll('.color-swatch').forEach(function(sw) {
-        sw.addEventListener('click', function() {
-          colorContainer.querySelectorAll('.color-swatch').forEach(function(s) {
-            s.classList.remove('active');
-          });
-          sw.classList.add('active');
-          selectedColor = sw.dataset.color;
-        });
-      });
-    }
+    document.title = 'ALVA — ' + p.name;
   }
 
-  /* ---- Thumb images helper ---- */
-  function getThumbs(p) {
-    /* Use same-category products as extra thumbs */
-    var sameCategory = PRODUCTS.filter(function(q) {
-      return q.id !== p.id && q.category === p.category;
-    }).slice(0, 3);
-
-    var thumbs = [p.image];
-    sameCategory.forEach(function(q) { thumbs.push(q.image); });
-    while (thumbs.length < 4) { thumbs.push(p.image); }
-    return thumbs.slice(0, 4);
-  }
-
-  /* ---- Stars helper ---- */
-  function starsHTML(rating) {
-    var full  = Math.floor(rating);
-    var half  = rating % 1 >= 0.5 ? 1 : 0;
-    var empty = 5 - full - half;
-    var s = '';
-    for (var i = 0; i < full; i++)  s += '★';
-    if (half) s += '½';
-    for (var j = 0; j < empty; j++) s += '☆';
-    return s;
-  }
-
-  /* ---- Quantity Controls ---- */
+  /* =========================================================
+     QUANTITY CONTROLS
+     ========================================================= */
   var qtyValue = document.getElementById('qty-value');
   var qtyMinus = document.getElementById('qty-minus');
   var qtyPlus  = document.getElementById('qty-plus');
 
-  if (qtyMinus) {
-    qtyMinus.addEventListener('click', function() {
-      if (quantity > 1) {
-        quantity--;
-        if (qtyValue) qtyValue.textContent = quantity;
-      }
-    });
-  }
+  if (qtyMinus) qtyMinus.addEventListener('click', function () {
+    if (quantity > 1) { quantity--; if (qtyValue) qtyValue.textContent = quantity; }
+  });
+  if (qtyPlus)  qtyPlus.addEventListener('click', function () {
+    quantity++; if (qtyValue) qtyValue.textContent = quantity;
+  });
 
-  if (qtyPlus) {
-    qtyPlus.addEventListener('click', function() {
-      quantity++;
-      if (qtyValue) qtyValue.textContent = quantity;
-    });
-  }
-
-  /* ---- Add to Cart ---- */
-  var addToCartBtn = document.getElementById('add-to-cart-btn');
-  if (addToCartBtn) {
-    addToCartBtn.addEventListener('click', function() {
-      if (!selectedSize && product.sizes.length > 1) {
-        showToast('Please select a size');
-        /* highlight size section */
-        var sizeContainer = document.getElementById('size-selector');
-        if (sizeContainer) {
-          sizeContainer.style.transition = 'outline 0.1s';
-          sizeContainer.style.outline = '1px solid var(--gold)';
-          setTimeout(function() { sizeContainer.style.outline = ''; }, 1500);
-        }
-        return;
-      }
-      var size = selectedSize || product.sizes[0] || 'One Size';
-      addToCart(product, size, quantity);
-      showToast('Added to cart — ' + product.name);
+  /* =========================================================
+     ADD TO CART
+     ========================================================= */
+  var addBtn = document.getElementById('add-to-cart-btn');
+  if (addBtn) {
+    addBtn.addEventListener('click', function () {
+      if (!item) return;
+      var size  = selectedSize || 'One Size';
+      var brand = (item.designer && item.designer.name) ? item.designer.name : '';
+      var image = (item.images && item.images[0]) ? item.images[0].url : '';
+      addToCart({ id: item.id, name: item.name, brand: brand, price: item.price, image: image }, size, quantity);
+      showToast('Added to cart — ' + item.name);
       updateCartBadge();
     });
   }
 
-  /* ---- Wishlist Button ---- */
-  var wishlistBtn = document.getElementById('wishlist-btn');
-  if (wishlistBtn) {
-    var isWished = isWishlisted(product.id);
-    wishlistBtn.classList.toggle('active', isWished);
-
-    wishlistBtn.addEventListener('click', function() {
-      var added = toggleWishlist(product.id);
-      wishlistBtn.classList.toggle('active', added);
-      showToast(added ? 'Added to wishlist' : 'Removed from wishlist');
-    });
-  }
-
-  /* ---- Accordion ---- */
-  var accordionItems = document.querySelectorAll('.accordion-item');
-  accordionItems.forEach(function(item) {
-    var header = item.querySelector('.accordion-header');
+  /* =========================================================
+     ACCORDION
+     ========================================================= */
+  document.querySelectorAll('.accordion-item').forEach(function (acc) {
+    var header = acc.querySelector('.accordion-header');
     if (!header) return;
-    header.addEventListener('click', function() {
-      var wasOpen = item.classList.contains('open');
-      /* close all */
-      accordionItems.forEach(function(i) { i.classList.remove('open'); });
-      /* open this one if it was closed */
-      if (!wasOpen) item.classList.add('open');
+    header.addEventListener('click', function () {
+      var wasOpen = acc.classList.contains('open');
+      document.querySelectorAll('.accordion-item').forEach(function (a) { a.classList.remove('open'); });
+      if (!wasOpen) acc.classList.add('open');
     });
   });
 
-  /* ---- "You May Also Like" ---- */
-  function renderRelated() {
-    var relatedContainer = document.getElementById('related-products');
-    if (!relatedContainer) return;
+  /* =========================================================
+     RELATED PRODUCTS
+     ========================================================= */
+  function loadRelated(category, excludeId) {
+    var relatedEl = document.getElementById('related-products');
+    if (!relatedEl) return;
 
-    var related = PRODUCTS.filter(function(p) {
-      return p.id !== product.id && p.category === product.category;
-    }).slice(0, 4);
-
-    if (related.length < 4) {
-      var others = PRODUCTS.filter(function(p) {
-        return p.id !== product.id && p.category !== product.category;
-      });
-      while (related.length < 4 && others.length > 0) {
-        related.push(others.shift());
+    fetch(API + '/items?per_page=8&category=' + encodeURIComponent(category), {
+      headers: { 'Accept': 'application/json' }
+    })
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      var items = (data.data && data.data.data) || data.data || [];
+      var related = items.filter(function (i) { return i.id !== excludeId; }).slice(0, 4);
+      if (related.length === 0) {
+        relatedEl.closest && relatedEl.closest('section') && (relatedEl.closest('section').style.display = 'none');
+        return;
       }
-    }
-
-    relatedContainer.innerHTML = related.map(function(p, i) {
-      return renderProductCard(p, i);
-    }).join('');
-
-    relatedContainer.querySelectorAll('.product-card').forEach(function(card) {
-      card.addEventListener('click', function(e) {
-        if (e.target.closest('button')) return;
-        window.location.href = 'product.html?id=' + card.dataset.id;
+      relatedEl.innerHTML = related.map(renderItemCard).join('');
+      relatedEl.querySelectorAll('.product-card').forEach(function (card) {
+        card.addEventListener('click', function (e) {
+          if (e.target.closest('button')) return;
+          window.location.href = 'product.html?id=' + card.dataset.id;
+        });
       });
-    });
+    })
+    .catch(function () {});
   }
 
-  /* ---- Init ---- */
-  populatePage();
-  renderRelated();
+  /* =========================================================
+     HELPERS
+     ========================================================= */
+  function setText(id, text) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = text;
+  }
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
 
 });

@@ -143,7 +143,9 @@ document.addEventListener('DOMContentLoaded', function() {
           if (token) {
             localStorage.setItem('alva_token', token);
           }
-          window.location.href = 'collection.html';
+          mergeGuestCart().then(function() {
+            window.location.href = 'collection.html';
+          });
         } else {
           showError(errorSignIn, parseApiError(result.data));
         }
@@ -210,8 +212,9 @@ document.addEventListener('DOMContentLoaded', function() {
           var token = result.data.token || (result.data.data && result.data.data.token);
           if (token) {
             localStorage.setItem('alva_token', token);
+            localStorage.setItem('alva_pending_email', email);
           }
-          window.location.href = 'collection.html';
+          window.location.href = 'verify.html';
         } else {
           showError(errorSignUp, parseApiError(result.data));
         }

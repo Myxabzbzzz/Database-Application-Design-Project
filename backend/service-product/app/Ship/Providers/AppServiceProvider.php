@@ -2,6 +2,8 @@
 
 namespace App\Ship\Providers;
 
+use App\Auth\JWTUserProvider;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,6 +22,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Auth::provider('jwt-stub', function ($app, array $config) {
+            return new JWTUserProvider($app['hash'], $config['model']);
+        });
+
         $this->loadMigrationsFromContainers();
     }
 

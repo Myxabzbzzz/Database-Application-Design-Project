@@ -48,15 +48,10 @@ services:
       retries: 10
 
   minio-init:
-    image: minio/mc:latest
+    build: ./docker/minio
     restart: on-failure
-    entrypoint: /bin/sh /init.sh
     volumes:
-      - ./docker/minio/init.sh:/init.sh:ro
-<<<<<<< HEAD
-=======
-      - ./frontend/images:/frontend-images:ro
->>>>>>> upstream/main
+      - "./DAD project.fig:/fig/design.fig:ro"
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
@@ -102,6 +97,12 @@ services:
       MAIL_ENCRYPTION: tls
       MAIL_FROM_ADDRESS: amir.boltabayev@gmail.com
       MAIL_FROM_NAME: "DAD Auth"
+    healthcheck:
+      test: ["CMD-SHELL", "php -r \"exit(stream_socket_client('tcp://127.0.0.1:8000')===false?1:0);\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     depends_on:
       postgres:
         condition: service_healthy
@@ -135,6 +136,12 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+    healthcheck:
+      test: ["CMD-SHELL", "php -r \"exit(stream_socket_client('tcp://127.0.0.1:8000')===false?1:0);\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     depends_on:
       postgres:
         condition: service_healthy
@@ -165,6 +172,13 @@ services:
       SESSION_DRIVER: array
       QUEUE_CONNECTION: redis
       LOG_CHANNEL: stderr
+      JWT_SECRET: ${JWT_SECRET}
+    healthcheck:
+      test: ["CMD-SHELL", "php -r \"exit(stream_socket_client('tcp://127.0.0.1:8000')===false?1:0);\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     depends_on:
       postgres:
         condition: service_healthy
@@ -194,7 +208,15 @@ services:
       SESSION_DRIVER: array
       CACHE_STORE: array
       LOG_CHANNEL: stderr
+    healthcheck:
+      test: ["CMD-SHELL", "php -r \"exit(stream_socket_client('tcp://127.0.0.1:8000')===false?1:0);\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     depends_on:
+      postgres:
+        condition: service_healthy
       minio:
         condition: service_healthy
 
@@ -208,10 +230,16 @@ services:
     volumes:
       - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
-      - service-auth
-      - service-payment
-      - service-product
-      - minio
+      service-auth:
+        condition: service_healthy
+      service-payment:
+        condition: service_healthy
+      service-product:
+        condition: service_healthy
+      service-storage:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
 
   # ─── Frontend ────────────────────────────────────────────────────────────────
 

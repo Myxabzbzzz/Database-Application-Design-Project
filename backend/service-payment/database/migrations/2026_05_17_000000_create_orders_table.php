@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('orders', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->char('id', 26)->primary();
+            $table->char('user_id', 26);
             $table->string('email');
             $table->string('name');
             $table->json('items');

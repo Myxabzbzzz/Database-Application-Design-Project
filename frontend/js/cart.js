@@ -180,20 +180,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  /* ---- SEED DEMO ITEMS if cart is empty ---- */
-  function seedDemoCart() {
-    if (getCart().length === 0) {
-      var PRODUCTS = window.PRODUCTS || [];
-      var dress   = PRODUCTS.find(function(p) { return p.id === 1; });
-      var blazer  = PRODUCTS.find(function(p) { return p.id === 7; });
-      if (dress)  addToCart(dress, 'M', 1);
-      if (blazer) addToCart(blazer, 'S', 1);
-    }
-  }
-
   /* ---- INIT ---- */
-  seedDemoCart();
-  renderCart();
-  updateCartBadge();
+  loadUserCart().then(function() {
+    renderCart();
+    updateCartBadge();
+  });
 
 });

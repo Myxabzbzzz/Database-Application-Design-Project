@@ -14,11 +14,7 @@ class CategoryController extends Controller
     public function index(): JsonResponse
     {
         $categories = collect(ItemCategoryEnum::cases())->map(function ($category) {
-            return [
-                'value' => $category->value,
-                'label' => $category->label(),
-                'description' => $category->description(),
-            ];
+            return ['value' => $category->value];
         });
 
         return response()->json([

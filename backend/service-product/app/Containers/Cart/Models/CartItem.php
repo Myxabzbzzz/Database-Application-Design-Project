@@ -4,6 +4,7 @@ namespace App\Containers\Cart\Models;
 
 use App\Containers\Item\Models\Item;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,10 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['cart_id', 'item_id', 'quantity'])]
 class CartItem extends Model
 {
-    use HasFactory;
-
-    public $incrementing = false;
-    protected $keyType = 'string';
+    use HasFactory, HasUlids;
 
     protected function casts(): array
     {

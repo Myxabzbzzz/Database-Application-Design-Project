@@ -11,17 +11,25 @@ use Illuminate\Http\Response;
 
 class CartController extends Controller
 {
+    private function userId(): string
+    {
+        return auth('api')->id();
+    }
+
+    private function loadCart(Cart $cart): Cart
+    {
+        $cart->load(['cartItems.item.designer', 'cartItems.item.images']);
+        $cart->loadCount('cartItems');
+        return $cart;
+    }
+
     /**
      * Display the authenticated user's cart.
      */
     public function show(Request $request): CartResource
     {
-        $cart = Cart::query()
-            ->with(['cartItems.item.designer', 'cartItems.item.images'])
-            ->withCount('cartItems')
-            ->firstOrCreate(['user_id' => $request->user()->id]);
-
-        return new CartResource($cart);
+        $cart = Cart::firstOrCreate(['user_id' => $this->userId()]);
+        return new CartResource($this->loadCart($cart));
     }
 
     /**
@@ -34,22 +42,14 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        $cart = Cart::firstOrCreate(['user_id' => $request->user()->id]);
+        $cart = Cart::firstOrCreate(['user_id' => $this->userId()]);
 
-        $cartItem = CartItem::updateOrCreate(
-            [
-                'cart_id' => $cart->id,
-                'item_id' => $validated['item_id'],
-            ],
-            [
-                'quantity' => $validated['quantity'],
-            ]
+        CartItem::updateOrCreate(
+            ['cart_id' => $cart->id, 'item_id' => $validated['item_id']],
+            ['quantity' => $validated['quantity']]
         );
 
-        $cart->load(['cartItems.item.designer', 'cartItems.item.images']);
-        $cart->loadCount('cartItems');
-
-        return new CartResource($cart);
+        return new CartResource($this->loadCart($cart));
     }
 
     /**
@@ -61,19 +61,14 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
+        $userId = $this->userId();
         $cartItem = CartItem::query()
-            ->whereHas('cart', function ($query) use ($request) {
-                $query->where('user_id', $request->user()->id);
-            })
+            ->whereHas('cart', fn($q) => $q->where('user_id', $userId))
             ->findOrFail($cartItemId);
 
         $cartItem->update($validated);
 
-        $cart = $cartItem->cart;
-        $cart->load(['cartItems.item.designer', 'cartItems.item.images']);
-        $cart->loadCount('cartItems');
-
-        return new CartResource($cart);
+        return new CartResource($this->loadCart($cartItem->cart));
     }
 
     /**
@@ -81,13 +76,11 @@ class CartController extends Controller
      */
     public function removeItem(Request $request, string $cartItemId): Response
     {
-        $cartItem = CartItem::query()
-            ->whereHas('cart', function ($query) use ($request) {
-                $query->where('user_id', $request->user()->id);
-            })
-            ->findOrFail($cartItemId);
-
-        $cartItem->delete();
+        $userId = $this->userId();
+        CartItem::query()
+            ->whereHas('cart', fn($q) => $q->where('user_id', $userId))
+            ->findOrFail($cartItemId)
+            ->delete();
 
         return response()->noContent();
     }
@@ -97,11 +90,7 @@ class CartController extends Controller
      */
     public function clear(Request $request): Response
     {
-        $cart = Cart::where('user_id', $request->user()->id)->first();
-
-        if ($cart) {
-            $cart->cartItems()->delete();
-        }
+        Cart::where('user_id', $this->userId())->first()?->cartItems()->delete();
 
         return response()->noContent();
     }
